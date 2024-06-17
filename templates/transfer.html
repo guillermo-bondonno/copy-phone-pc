@@ -1,0 +1,175 @@
+{% extends 'base.html' %} {% block title %}Home Page{% endblock %} {% block
+content %}
+<style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      background-color: #f0f0f0;
+    }
+    .newButtonCard,
+    .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #c6c6c6;
+      border-style: groove;
+      border-color: black;
+      padding: 17px;
+      margin: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 30px;
+      box-sizing: border-box;
+    }
+
+    .newButtonCard {
+      background-color: #f0f0f0;
+      border-style: none;
+      border-color: black;
+      box-shadow: none;
+      border-radius: 0px;
+      padding: 0px;
+
+
+    }
+
+    #copyThisLink,
+    .card button {
+      cursor: pointer;
+      margin: 15px;
+    }
+
+    #dataDisplay {
+    width: 90%; /* Adjust based on your layout */
+    height: 100px; /* Fixed height, or adjust as needed */
+    background-color: #f0f0f0; /* Match the page background or as desired */
+    border: 1px solid #c6c6c6; /* Match the card styling */
+    box-sizing: border-box; /* Include padding and borders in the element's total width and height */
+    overflow-y: auto; /* Allow vertical scrolling */
+    resize: none; /* Prevent resizing */
+  }
+
+    */
+</style>
+
+<h3 class="newButtonCard">
+  <a href="/transfer"> new </a>
+</h3>
+<form action="" class="card">
+  <input type="text" name="data" id="data" value="{{data}}" />
+  <input type="hidden" name="unique_id" value="{{unique_id}}" />
+  <button type="submit">send</button>
+</form>
+<!-- Optional header content -->
+<div class="card">
+  <!-- TODO: make responsive when the text is too large -->
+  <!-- <p id="dataDisplay">{{data}}</p> -->
+  <textarea id="dataDisplay" readonly>{{data}}</textarea>
+
+  <button id="copyDataButton">copy</button>
+  <button id="followLinkButton">follow link</button>
+</div>
+<div id="qrcode" class="card">
+  <button id="copyQrCodeButton">copy</button>
+</div>
+
+<script>
+  var qrText = window.location.href;
+  if (!qrText.includes("unique_id")) {
+    qrText = window.location.href + "?unique_id=" + "{{unique_id}}";
+  }
+  if (qrText.includes("data=")) {
+    //remove the data part of the QR
+    qrText = qrText.split("?")[0] + "?unique_id=" + "{{unique_id}}";
+  }
+  new QRCode(document.getElementById("qrcode"), {
+    text: qrText,
+    width: 128,
+    height: 128,
+  });
+
+  function updateData() {
+    fetch("/check/{{unique_id}}")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.data != "{{data}}") {
+          document.getElementById("dataDisplay").innerText = data.data;
+        }
+      });
+  }
+
+  updateData();
+  setInterval(updateData, 3000);
+
+  document
+    .getElementById("copyDataButton")
+    .addEventListener("click", function () {
+      var copyText = document.getElementById("dataDisplay");
+      var textArea = document.createElement("textarea");
+      textArea.value = copyText.innerText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      textArea.remove();
+      // change the button text to copied! for a few seconds
+      document.getElementById("copyDataButton").innerText = "copied!";
+      setTimeout(function () {
+        document.getElementById("copyDataButton").innerText = "copy";
+      }, 2000);
+    });
+
+  document
+    .getElementById("followLinkButton")
+    .addEventListener("click", function () {
+      var url = document.getElementById("dataDisplay").value;
+      if (isValidUrl(url)) {
+        window.open(url, "_blank");
+      } else {
+      }
+    });
+
+  function isValidUrl(string) {
+    try {
+      new URL(string);
+      return true; // Valid URL format
+    } catch (e) {
+      return false; // Invalid URL format
+    }
+  }
+
+  document
+    .getElementById("copyQrCodeButton")
+    .addEventListener("click", function () {
+      var copyText = document.getElementById("qrcode").title;
+      var textArea = document.createElement("textarea");
+      textArea.value = copyText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      textArea.remove();
+      // change the button text to copied! for a few seconds
+      document.getElementById("copyQrCodeButton").innerText = "copied!";
+      setTimeout(function () {
+        document.getElementById("copyQrCodeButton").innerText = "copy";
+      }, 2000);
+    });
+
+  //TODO fix this
+  document
+    .getElementById("dataDisplay")
+    .addEventListener("change", function (event) {
+      if (document.getElementById("data").value.startswith("http")) {
+        console.log("we got a link!");
+      }
+    });
+</script>
+{% endblock %}

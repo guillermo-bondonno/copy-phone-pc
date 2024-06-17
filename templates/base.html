@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <meta
+      name="description"
+      content="Copy text from PC to your smart phone or vice versa. Scan the QR code and the text you copy will be updated on the browser"
+    />
+    <title>Copy from / to PC to Phone!</title>
+    <meta
+      name="google-site-verification"
+      content="eWePetqNXGO5XNoqu0l9NiS5Q_0_7Oj4TbcV5fZfEqE"
+    />
+    <style>
+      /* make everything use a monospace font */
+      * {
+        font-family: monospace;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "WebApplication",
+        "name": "Instant Text Transfer",
+        "url": "https://www.example.com/transfer",
+        "description": "Easily copy text from your PC to your smartphone or vice versa. Simply scan the QR code, and the text you copy will be updated on the browser instantly.",
+        "applicationCategory": "Utility",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript enabled",
+        "features": [
+          "Text transfer via QR code",
+          "No app installation required",
+          "Supports all modern web browsers"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <header></header>
+
+    <main>
+      {% block content %}
+      <!-- Page content gets overridden here -->
+      {% endblock %}
+    </main>
+  </body>
+</html>
